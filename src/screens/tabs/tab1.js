@@ -3,6 +3,7 @@ import { Container, Content, List } from "native-base";
 import { getArticles } from "../service/news";
 import { ActivityIndicator, Alert, View, Text } from "react-native";
 import DataItem from "../component/dataItem";
+import Modal from "../component/modal";
 
 export default class tab1 extends Component {
   constructor(props) {
@@ -11,8 +12,24 @@ export default class tab1 extends Component {
     this.state = {
       isLoading: true,
       data: null,
+      setModalVisible: false,
+      modalArticleData: {},
     };
   }
+
+  handleItemDataOnPress = (articleData) => {
+    this.setState({
+      setModalVisible: true,
+      modalArticleData: articleData,
+    });
+  };
+
+  handleModalClose = () => {
+    this.setState({
+      setModalVisible: false,
+      modalArticleData: {},
+    });
+  };
 
   componentDidMount() {
     getArticles().then(
@@ -39,7 +56,7 @@ export default class tab1 extends Component {
       <List
         dataArray={this.state.data}
         renderRow={(item) => {
-          return <DataItem data={item} />;
+          return <DataItem onPress={this.handleItemDataOnPress} data={item} />;
         }}
       />
     );
@@ -47,6 +64,11 @@ export default class tab1 extends Component {
     return (
       <Container>
         <Content>{view}</Content>
+        <Modal
+          showModal={this.state.setModalVisible}
+          articleData={this.state.modalArticleData}
+          onClose={this.handleModalClose}
+        />
       </Container>
     );
   }
